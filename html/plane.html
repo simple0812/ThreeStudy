@@ -5,6 +5,7 @@
         <title>lesson1</title>
         <!--引入Three.js-->
         <script src="../js/three.js"></script>
+        <script src="../js/OrbitControls.js"></script>
         <script type="text/javascript">
             //开启Three.js渲染器
             var renderer; //声明全局变量（对象）
@@ -32,18 +33,8 @@
             }
             //设置相机
             function initCamera() {
-                camera = new THREE.PerspectiveCamera(45, width / height, 1, 5000); //设置透视投影的相机,默认情况下相机的上方向为Y轴，右方向为X轴，沿着Z轴朝里（视野角：fov 纵横比：aspect 相机离视体积最近的距离：near 相机离视体积最远的距离：far）
-                camera.position.x = 0; //设置相机的位置坐标
-                camera.position.y = 50; //设置相机的位置坐标
-                camera.position.z = 100; //设置相机的位置坐标
-                camera.up.x = 0; //设置相机的上为「x」轴方向
-                camera.up.y = 1; //设置相机的上为「y」轴方向
-                camera.up.z = 0; //设置相机的上为「z」轴方向
-                camera.lookAt({
-                    x: 0,
-                    y: 0,
-                    z: 0
-                }); //设置视野的中心坐标
+                camera = new THREE.PerspectiveCamera(36, width / height, 0.25, 16); 
+                camera.position.set( 0, 1.3, 3 );
             }
             //设置场景
             function initScene() {
@@ -55,28 +46,62 @@
                 light = new THREE.DirectionalLight(0xff0000, 1.0, 0); //设置平行光源
                 light.position.set(200, 200, 200); //设置光源向量
                 scene.add(light); // 追加光源到场景
+
+                scene.add( new THREE.AmbientLight( 0x505050 ) );
+
+                var spotLight = new THREE.SpotLight( 0xffffff );
+                spotLight.angle = Math.PI / 5;
+                spotLight.penumbra = 0.2;
+                spotLight.position.set( 2, 3, 3 );
+                spotLight.castShadow = true;
+                spotLight.shadow.camera.near = 3;
+                spotLight.shadow.camera.far = 10;
+                spotLight.shadow.mapSize.width = 1024;
+                spotLight.shadow.mapSize.height = 1024;
+                scene.add( spotLight );
+
+                var dirLight = new THREE.DirectionalLight( 0x55505a, 1 );
+                dirLight.position.set( 0, 3, 0 );
+                dirLight.castShadow = true;
+                dirLight.shadow.camera.near = 1;
+                dirLight.shadow.camera.far = 10;
+
+                dirLight.shadow.camera.right = 1;
+                dirLight.shadow.camera.left = - 1;
+                dirLight.shadow.camera.top  = 1;
+                dirLight.shadow.camera.bottom = - 1;
+
+                dirLight.shadow.mapSize.width = 1024;
+                dirLight.shadow.mapSize.height = 1024;
+                scene.add( dirLight );
             }
             //设置物体
             function initObject() {
-                sphere = new THREE.Mesh(
-                    new THREE.SphereGeometry(20, 100, 100), //width,height,depth
-                    new THREE.MeshLambertMaterial({
-                        color: 0xff0000
-                    }) //材质设定
-                );
-                scene.add(sphere);
-                sphere.position.set(0, 0, 0);
+               var ground = new THREE.Mesh(
+                        new THREE.PlaneBufferGeometry( 9, 9, 1, 1 ),
+                        new THREE.MeshPhongMaterial( {
+                            color: 0xa0adaf, shininess: 150 } ) );
+
+                ground.rotation.x = - Math.PI / 2; // rotates X/Y to X/Z
+                ground.receiveShadow = true;
+                scene.add( ground );
             }
 
             //执行
-            function threeStart() {
+            function init() {
                 initThree();
                 initCamera();
                 initScene();
                 initLight();
                 initObject();
-                renderer.clear();
+
+                var controls = new THREE.OrbitControls( camera, renderer.domElement );
+                controls.target.set( 0, 1, 0 );
+                controls.update();
+
+
                 renderer.render(scene, camera);
+                
             }
             </script>
 
@@ -91,7 +116,7 @@
         </style>
     </head>
 
-    <body onload='threeStart();'>
+    <body onload='init();'>
         <!--盛放canvas的容器-->
         <div id="canvas3d"></div>
     </body>

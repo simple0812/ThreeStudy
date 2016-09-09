@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <title>lesson3</title>
         <!--引入Three.js-->
-        <script src="../js/three.min.js"></script>
+        <script src="../js/three.js"></script>
         <script type="text/javascript">
             //开启Three.js渲染器
             var renderer; //声明全局变量（对象）
@@ -71,9 +71,7 @@
                     var pX = Math.random() * 500 - 250;
                     var pY = Math.random() * 500 - 250;
                     var pZ = Math.random() * 500 - 250; 
-                    var particle = new THREE.Vertex( 
-                        new THREE.Vector3(pX, pY, pZ) 
-                    ); 
+                    var particle = new THREE.Vector3(pX, pY, pZ);
                     // 将粒子加入粒子geometry 
                     particles.vertices.push(particle); 
                 } 
